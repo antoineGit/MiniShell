@@ -14,9 +14,17 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+
+// entete de fonctions
 int parsing();
 int commande(int fin, int fout, char* com, char* param, int* bg);
 int delimiteur(int c);
+
+
+
+// variables globales
+// on changera rescommande pour la mettre dans le main
+int rescommande = 0;
 char* resP[SIZEMAX];
 
 int main(int argc, const char * argv[]) {
@@ -32,18 +40,21 @@ int main(int argc, const char * argv[]) {
     fflush(stdout);
 
     while (1) {
-        if (1 == 0) { // TO-DO
+        if (rescommande == 1 ) {
+            rescommande=0;
             eof = 0 ;
             printf("DAUPHINE> ");
             fflush(stdout);
         }
-        else
+        else{
+            //plus tard : rescommande = commander ();
             commande(0,1,&com,&param,&bg);
-        
+        }
         return 0;
     }
 }
 
+// pour plus tard mettre des pointeurs sur fin fout, le retour sera rescommande
 int commande(int fin, int fout, char* com, char* param, int* bg){
     int s, res=0, status, eof; // VAR status && eof ajoutées
     
@@ -54,9 +65,12 @@ int commande(int fin, int fout, char* com, char* param, int* bg){
         case 0: // NL
             res = 2;
             pid_t pid = fork();
-            if (pid == 0)
+            if (pid == 0){
+                rescommande =1; //cela permettra de ne pas de reecrire
                 execvp(resP[0], resP);
+            }
             else{
+                rescommande = 2 ;
                 wait(&status); // VAR status ajoutée
                 eof = 2;
                 break;
