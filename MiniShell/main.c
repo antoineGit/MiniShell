@@ -17,7 +17,7 @@
 
 // entete de fonctions
 int parsing();
-int commande(int fin, int fout, char* com, char* param, int* bg);
+int commande(int *fin, int *fout, char* com, char* param, int* bg);
 int delimiteur(int c);
 
 
@@ -28,13 +28,17 @@ int rescommande = 0;
 char* resP[SIZEMAX];
 
 int main(int argc, const char * argv[]) {
+    int fin[1];     fin[0]=0;
+    int fout[1];    fout[0]=1;
+    int bg[1];
     // Création d'un fichier récuperant les impressions intermediaires (deboggage)
     int fmess = open("imp", O_WRONLY | O_TRUNC | O_CREAT, 0640);
     close(2);
     dup(fmess);
     close(fmess);
-    char * com[20], param[20]; //VAR param ajoutée
-    int status, bg, eof = 0;
+    char com[20];
+    char param[20]; //VAR param ajoutée
+    int status, eof = 0;
     
     printf("DAUPHINE> ");
     fflush(stdout);
@@ -48,14 +52,14 @@ int main(int argc, const char * argv[]) {
         }
         else{
             //plus tard : rescommande = commander ();
-            commande(0,1,&com,&param,&bg);
+            commande(fin,fout,com,param,bg);
         }
         return 0;
     }
 }
 
 // pour plus tard mettre des pointeurs sur fin fout, le retour sera rescommande
-int commande(int fin, int fout, char* com, char* param, int* bg){
+int commande(int *fin, int *fout, char* com, char* param, int* bg){
     int s, res=0, status, eof; // VAR status && eof ajoutées
     
     s=parsing();
@@ -83,7 +87,7 @@ int commande(int fin, int fout, char* com, char* param, int* bg){
             
         case 2: // &
              //TO-DO
-            bg=1;
+            *bg=1;
             break;
             
         case 3: // <
@@ -93,8 +97,9 @@ int commande(int fin, int fout, char* com, char* param, int* bg){
         case 4: // >
              //TO-DO
             parsing();
+            int x=0; // a remplacer par ce qu il y a en dessous
             //int x=open(,);
-            fout = x ;
+            *fout = x ;
             break;
             
         case 5: // |
@@ -108,7 +113,7 @@ int commande(int fin, int fout, char* com, char* param, int* bg){
             
         case 10: // mot
             if (strcmp(&com[0], "exit")==0) {
-                fin=1;
+                *fin=1;
                 break;
             }
             break;
