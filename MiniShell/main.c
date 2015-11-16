@@ -99,6 +99,7 @@ int commande(int fin, int fout, char* com, char* param, int* bg){
             
         case 7: // EOF
              //TO-DO
+            exit(5); // le prgm doit s arreter
             break;
             
         case 10: // mot
