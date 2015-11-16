@@ -83,6 +83,7 @@ int commande(int fin, int fout, char* com, char* param, int* bg){
             
         case 2: // &
              //TO-DO
+            bg=1;
             break;
             
         case 3: // <
@@ -91,6 +92,9 @@ int commande(int fin, int fout, char* com, char* param, int* bg){
             
         case 4: // >
              //TO-DO
+            parsing();
+            //int x=open(,);
+            fout = x ;
             break;
             
         case 5: // |
@@ -117,7 +121,7 @@ int commande(int fin, int fout, char* com, char* param, int* bg){
 }
 
 int parsing(){
-    int symboleP; // VAR ajoutée
+    char mot[100];
     int i=0;
     int cmot = 0;
     fprintf(stderr, "debut parsing\n");
@@ -127,41 +131,33 @@ int parsing(){
         fprintf(stderr,"caractère lu %d %c\n",c,c);
         
         if (c == '\n') {
-            symboleP = 0;
             return 0;
         }
         else if (c == ';') {
-            symboleP = 1;
             return 1;
         }
         else if (c == '&') {
-            symboleP = 2;
             return 2;
         }
         else if (c == '<') {
-            symboleP = 3;
             return 3;
         }
         else if (c == '>') {
-            symboleP = 4;
             return 4;
         }
         else if (c == '|') {
-            symboleP = 5;
             return 5;
         }
-        else if (c == 'EOF') {
-            symboleP = 7;
+        else if (c == EOF) {
             return 7;
         }
-        else if (c != " ") {
+        else if (c != ' ') {
             // On rentre dans une sequence
-            symboleP = 10;
             //fprintf(stderr, "caractère lu 10\n");
-            while( c != '\n' && !strchr(delimiteur, c)){ // Pas compris, VAR delimiteurs inconnue
+            while( c != '\n' && !delimiteur(c)){
                 i=0;
                 while (c!=32) {
-                    if ((c != "\n") && (delimiteur(c) == 0)) {
+                    if ((c != '\n') && (delimiteur(c) == 0)) {
                         mot[i] = c;
                         i++;
                         c=getchar();
@@ -179,10 +175,10 @@ int parsing(){
                 c = getchar();
             
             ungetc(c, stdin);
-            mot[i] = "\0"; // Pas compris, VAR mot inconnue
+            mot[i] = '\0';
             resP[cmot++] = strdup(mot);
             fprintf(stderr, "element comm lue %s %s\n", resP[0],resP[1]);
-            if(c == '\n' || strchr(delimiteurs,c)){ // Pas compris, VAR delimiteurs inconnue
+            if(c == '\n' || delimiteur(c)){
                 resP[cmot]=0;
                 if(c!='\n')
                     ungetc(c, stdin);
@@ -190,7 +186,9 @@ int parsing(){
             }
         }
     }
+    //erreur a traiter
     fprintf(stderr, "element comm lue %s %s\n", resP[0],resP[1]);
+    return 404;
 }
                         
 int delimiteur(int c){
