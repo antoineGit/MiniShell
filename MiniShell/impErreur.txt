@@ -1,0 +1,4 @@
+debut parsing
+caractère lu 108 l
+element comm lue ls (null)
+résultat parsing 10

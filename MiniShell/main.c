@@ -19,7 +19,7 @@
 int parsing();
 int commande(int *fin, int *fout, char* com, char* param, int* bg);
 int delimiteur(int c);
-
+int nl=3 ; //afficher en cas de
 
 
 // variables globales
@@ -32,7 +32,7 @@ int main(int argc, const char * argv[]) {
     int fout[1];    fout[0]=1;
     int bg[1];
     // Création d'un fichier récuperant les impressions intermediaires (deboggage)
-    int fmess = open("imp", O_WRONLY | O_TRUNC | O_CREAT, 0640);
+    int fmess = open("impErreur.txt",O_CREAT | O_RDWR | O_TRUNC, 0666);
     close(2);
     dup(fmess);
     close(fmess);
@@ -44,7 +44,8 @@ int main(int argc, const char * argv[]) {
     fflush(stdout);
 
     while (1) {
-        if (rescommande == 1 ) {
+        if (rescommande == 1 && nl ==1) {
+            nl=3;
             rescommande=0;
             eof = 0 ;
             printf("DAUPHINE> ");
@@ -52,7 +53,7 @@ int main(int argc, const char * argv[]) {
         }
         else{
             //plus tard : rescommande = commander ();
-            commande(fin,fout,com,param,bg);
+            commande(fin,fout,com,param,bg);nl=3;
         }
         return 0;
     }
@@ -66,23 +67,29 @@ int commande(int *fin, int *fout, char* com, char* param, int* bg){
     fprintf(stderr, "résultat parsing %d\n",s);
     
     switch (s) {
-        case 0: // NL
-            res = 2;
-            pid_t pid = fork();
-            if (pid == 0){
+
+            
+        case 0: // NL`
+            nl =1;
+            printf("bonjour \n\n");fflush(stdout);
+           
+        case 1: // ;
+            
+            if( nl == 3 )getchar();//on prend le ;
+             res = 2;
+           // char tmp = getchar();
+            pid_t pid ;
+            if ( (pid = fork()) ){
                 rescommande =1; //cela permettra de ne pas de reecrire
                 execvp(resP[0], resP);
-            }
-            else{
+            }else{
                 rescommande = 2 ;
-                wait(&status); // VAR status ajoutée
+                wait(&status);
                 eof = 2;
-                break;
+               break;
             }
-            break;
             
-        case 1: // ;
-             //TO-DO
+            
             break;
             
         case 2: // &
