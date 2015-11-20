@@ -1,4 +1,6 @@
 debut parsing
-caractère lu 108 l
-element comm lue ls (null)
-résultat parsing 10
+caractère lu 112 p
+element comm lue pwd (null)
+résultat parsing 0
+bonjour 
+

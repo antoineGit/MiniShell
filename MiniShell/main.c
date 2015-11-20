@@ -52,7 +52,7 @@ int main(int argc, const char * argv[]) {
             fflush(stdout);
         }
         else{
-            //plus tard : rescommande = commander ();
+            //plus tard : rescommande = commande ();
             commande(fin,fout,com,param,bg);nl=3;
         }
         return 0;
@@ -71,7 +71,7 @@ int commande(int *fin, int *fout, char* com, char* param, int* bg){
             
         case 0: // NL`
             nl =1;
-            printf("bonjour \n\n");fflush(stdout);
+            fprintf(stderr,"bonjour \n\n");
            
         case 1: // ;
             
@@ -194,7 +194,7 @@ int parsing(){
                 resP[cmot]=0;
                 if(c!='\n')
                     ungetc(c, stdin);
-                return 10;
+                return 0;//remettre a 10
             }
         }
     }
