@@ -1,6 +1,22 @@
 debut parsing
+caractère lu 108 l
+valeur du caractère lu 115
+valeur du caractère lu 32
+element comm lue ls (null)
+résultat parsing 10
+debut parsing
+caractère lu 59 ;
+résultat parsing 1
+debut parsing
+caractère lu 32  
 caractère lu 112 p
+valeur du caractère lu 119
+valeur du caractère lu 100
+valeur du caractère lu 10
 element comm lue pwd (null)
-résultat parsing 0
-bonjour 
+résultat parsing 10
+debut parsing
+caractère lu 10 
 
+résultat parsing 0
+debut parsing

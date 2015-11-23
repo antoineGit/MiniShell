@@ -17,9 +17,9 @@
 
 // entete de fonctions
 int parsing();
-int commande(int *fin, int *fout, char* com, char* param, int* bg);
+int commande(int fin, int fout, char* resP[], char* param, int* bg);
 int delimiteur(int c);
-int nl=3 ; //afficher en cas de
+int nl=0 ; //afficher en cas de
 
 
 // variables globales
@@ -28,7 +28,7 @@ int rescommande = 0;
 char* resP[SIZEMAX];
 
 int main(int argc, const char * argv[]) {
-    int fin[1];     fin[0]=0;
+    int fin = 0;    
     int fout[1];    fout[0]=1;
     int bg[1];
     // Création d'un fichier récuperant les impressions intermediaires (deboggage)
@@ -44,47 +44,74 @@ int main(int argc, const char * argv[]) {
     fflush(stdout);
 
     while (1) {
-        if (rescommande == 1 && nl ==1) {
-            nl=3;
+        //printf("rescommande = %d", rescommande);fflush(stdout);
+        if(fin ==64){return 0 ;}
+        if(fin == 40 ){close(1);dup(sauv);//pour fermer }
+        if (rescommande == 2) {
             rescommande=0;
-            eof = 0 ;
+            nl=0;
             printf("DAUPHINE> ");
             fflush(stdout);
         }
         else{
+            nl=0;
             //plus tard : rescommande = commande ();
-            commande(fin,fout,com,param,bg);nl=3;
+            fin = commande(0,1,resP,param,bg);
+           // printf("continue");fflush(stdout);
         }
-        return 0;
+       
     }
+     return 0;
 }
 
 // pour plus tard mettre des pointeurs sur fin fout, le retour sera rescommande
-int commande(int *fin, int *fout, char* com, char* param, int* bg){
+int commande(int fin, int fout, char* resP[], char* param, int* bg){
     int s, res=0, status, eof; // VAR status && eof ajoutées
     
     s=parsing();
     fprintf(stderr, "résultat parsing %d\n",s);
     
     switch (s) {
-
-            
+ 
         case 0: // NL`
-            nl =1;
-            fprintf(stderr,"bonjour \n\n");
-           
-        case 1: // ;
-            
-            if( nl == 3 )getchar();//on prend le ;
-             res = 2;
-           // char tmp = getchar();
-            pid_t pid ;
-            if ( (pid = fork()) ){
-                rescommande =1; //cela permettra de ne pas de reecrire
+            nl = 1;
+            pid_t pid2 ;
+
+            if ( (pid2 = fork())==0 ){
+                
+                rescommande = 1; //cela permettra de ne pas de reecrire
                 execvp(resP[0], resP);
+               // printf("\nexecute");fflush(stdout);
             }else{
-                rescommande = 2 ;
                 wait(&status);
+                rescommande = 2 ;    
+               eof = 2;
+              break;
+            }
+            break;
+        case 1: // ;
+            getchar();
+            nl+=2;
+          // if( nl == 3 ){getchar();}//on prend le ;
+             res = 2;
+            pid_t pid ;
+            if ( (pid = fork())==0 ){
+                //printf("\nexecute");fflush(stdout);
+
+                rescommande = 1; //cela permettra de ne pas de reecrire
+                execvp(resP[0], resP);
+               // printf("\nexecute");fflush(stdout);
+
+            }else{
+                wait(&status);
+                if(nl==3){
+                rescommande = 2 ;
+                }else{
+                 rescommande = 0;
+
+                }
+                
+                
                 eof = 2;
                break;
             }
@@ -103,10 +130,17 @@ int commande(int *fin, int *fout, char* com, char* param, int* bg){
             
         case 4: // >
              //TO-DO
-            parsing();
+            int sauv = dup(1); //on ne perd pas l entre courante 
+            close(1);
+            i=open(resp[0]);//le nom du fichier
+            dup(i);//comme ca on ecrira dessus avec le truc superieur
+              parsing();
             int x=0; // a remplacer par ce qu il y a en dessous
-            //int x=open(,);
-            *fout = x ;
+          
+            
+            return 40 ; //redirection
+            
+          
             break;
             
         case 5: // |
@@ -115,14 +149,16 @@ int commande(int *fin, int *fout, char* com, char* param, int* bg){
             
         case 7: // EOF
              //TO-DO
+            return 64;
             exit(5); // le prgm doit s arreter
             break;
             
         case 10: // mot
-            if (strcmp(&com[0], "exit")==0) {
-                *fin=1;
-                break;
+            if (strcmp(resP[0], "exit")==0) {
+               // *fin=1;
+                printf("\nEXIT\n");
             }
+            
             break;
             
         default:
@@ -173,7 +209,7 @@ int parsing(){
                         mot[i] = c;
                         i++;
                         c=getchar();
-                        //fprintf(stderr, "valeur du caractère lu %d\n",c);
+                        fprintf(stderr, "valeur du caractère lu %d\n",c);
                     }
                     else{
                         //fprintf(stderr, "break\n");
@@ -194,7 +230,7 @@ int parsing(){
                 resP[cmot]=0;
                 if(c!='\n')
                     ungetc(c, stdin);
-                return 0;//remettre a 10
+                return 10;//remettre a 10
             }
         }
     }
