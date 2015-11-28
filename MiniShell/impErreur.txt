@@ -20,3 +20,5 @@ caractère lu 10
 
 résultat parsing 0
 debut parsing
+caractère lu -1 �
+résultat parsing 7
